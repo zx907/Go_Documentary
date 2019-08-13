@@ -8,7 +8,7 @@
       <ObjectId>16393</ObjectId>
       <StateNumber>557</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>566</IntrospectionStateNumber>
+      <IntrospectionStateNumber>586</IntrospectionStateNumber>
       <Current>1</Current>
       <Visible>1</Visible>
       <Relations>sequence|table|16395|16397|1
@@ -97,7 +97,7 @@
       <Comment>standard public schema</Comment>
       <StateNumber>352</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>567</IntrospectionStateNumber>
+      <IntrospectionStateNumber>587</IntrospectionStateNumber>
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
@@ -159,31 +159,31 @@
     </extension>
     <sequence id="24" parent="16" name="users_id_seq">
       <ObjectId>16395</ObjectId>
-      <StateNumber>562</StateNumber>
-      <Owner>postgres</Owner>
+      <StateNumber>579</StateNumber>
+      <Owner>db_user</Owner>
       <SequenceIdentity>1..2147483647</SequenceIdentity>
       <CacheSize>1</CacheSize>
       <DataType>integer</DataType>
     </sequence>
     <table id="25" parent="16" name="comments">
       <ObjectId>16416</ObjectId>
-      <Owner>postgres</Owner>
-      <StateNumber>564</StateNumber>
+      <Owner>db_user</Owner>
+      <StateNumber>577</StateNumber>
     </table>
     <table id="26" parent="16" name="sessions">
       <ObjectId>16424</ObjectId>
-      <Owner>postgres</Owner>
-      <StateNumber>565</StateNumber>
+      <Owner>db_user</Owner>
+      <StateNumber>576</StateNumber>
     </table>
     <table id="27" parent="16" name="users">
       <ObjectId>16397</ObjectId>
-      <Owner>postgres</Owner>
-      <StateNumber>562</StateNumber>
+      <Owner>db_user</Owner>
+      <StateNumber>584</StateNumber>
     </table>
     <table id="28" parent="16" name="video_info">
       <ObjectId>16408</ObjectId>
-      <Owner>postgres</Owner>
-      <StateNumber>563</StateNumber>
+      <Owner>db_user</Owner>
+      <StateNumber>578</StateNumber>
     </table>
     <column id="29" parent="25" name="id">
       <Position>1</Position>
@@ -218,7 +218,7 @@
     </column>
     <index id="34" parent="25" name="comments_pkey">
       <ObjectId>16422</ObjectId>
-      <StateNumber>564</StateNumber>
+      <StateNumber>577</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -237,10 +237,10 @@
       <StateNumber>565</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="37" parent="26" name="TTL">
+    <column id="37" parent="26" name="ttl">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
-      <StateNumber>565</StateNumber>
+      <StateNumber>573</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="38" parent="26" name="username">
@@ -251,7 +251,7 @@
     </column>
     <index id="39" parent="26" name="sessions_pkey">
       <ObjectId>16427</ObjectId>
-      <StateNumber>565</StateNumber>
+      <StateNumber>576</StateNumber>
       <ColNames>session_id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -272,82 +272,70 @@
       <TypeId>23</TypeId>
     </column>
     <column id="42" parent="27" name="username">
-      <Position>2</Position>
-      <DataType>varchar(64) []|0s</DataType>
-      <StateNumber>562</StateNumber>
-      <TypeId>1015</TypeId>
+      <Position>4</Position>
+      <DataType>varchar(64)|0s</DataType>
+      <StateNumber>583</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="43" parent="27" name="pwd">
-      <Position>3</Position>
-      <DataType>varchar(256) []|0s</DataType>
-      <StateNumber>562</StateNumber>
-      <TypeId>1015</TypeId>
+      <Position>5</Position>
+      <DataType>varchar(256)|0s</DataType>
+      <StateNumber>584</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <index id="44" parent="27" name="users_pkey">
       <ObjectId>16404</ObjectId>
-      <StateNumber>562</StateNumber>
+      <StateNumber>579</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <index id="45" parent="27" name="users_username_key">
-      <ObjectId>16406</ObjectId>
-      <StateNumber>562</StateNumber>
-      <ColNames>username</ColNames>
-      <Unique>1</Unique>
-    </index>
-    <key id="46" parent="27" name="users_pkey">
+    <key id="45" parent="27" name="users_pkey">
       <ObjectId>16405</ObjectId>
       <StateNumber>562</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>users_pkey</UnderlyingIndexName>
     </key>
-    <key id="47" parent="27" name="users_username_key">
-      <ObjectId>16407</ObjectId>
-      <StateNumber>562</StateNumber>
-      <ColNames>username</ColNames>
-      <UnderlyingIndexName>users_username_key</UnderlyingIndexName>
-    </key>
-    <column id="48" parent="28" name="id">
+    <column id="46" parent="28" name="id">
       <Position>1</Position>
       <DataType>varchar(64)|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>563</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="49" parent="28" name="author_id">
+    <column id="47" parent="28" name="author_id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <StateNumber>563</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="50" parent="28" name="name">
+    <column id="48" parent="28" name="name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
       <StateNumber>563</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="51" parent="28" name="display_time">
+    <column id="49" parent="28" name="display_ctime">
       <Position>4</Position>
       <DataType>text|0s</DataType>
-      <StateNumber>563</StateNumber>
+      <StateNumber>568</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="52" parent="28" name="create_time">
+    <column id="50" parent="28" name="create_time">
       <Position>5</Position>
       <DataType>time with time zone|0s</DataType>
       <StateNumber>563</StateNumber>
       <TypeId>1266</TypeId>
     </column>
-    <index id="53" parent="28" name="video_info_pkey">
+    <index id="51" parent="28" name="video_info_pkey">
       <ObjectId>16414</ObjectId>
-      <StateNumber>563</StateNumber>
+      <StateNumber>578</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="54" parent="28" name="video_info_pkey">
+    <key id="52" parent="28" name="video_info_pkey">
       <ObjectId>16415</ObjectId>
       <StateNumber>563</StateNumber>
       <ColNames>id</ColNames>

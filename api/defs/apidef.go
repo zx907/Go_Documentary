@@ -1,7 +1,7 @@
 package defs
 
 type UserCredential struct {
-	Username string `json:"user_name"`
+	Username string `json:"username"`
 	Pwd      string `json:"pwd"`
 }
 
@@ -43,9 +43,9 @@ type Comments struct {
 }
 
 type User struct {
-	Id        int
-	LoginName string
-	Pwd       string
+	Id       int
+	Username string
+	Pwd      string
 }
 
 type VideoInfo struct {

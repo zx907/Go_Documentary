@@ -11,18 +11,23 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	// fmt.Fprintf(w, "Hi there, love you!")
 	res, _ := ioutil.ReadAll(r.Body)
 	ubody := &defs.UserCredential{}
 
 	if err := json.Unmarshal(res, ubody); err != nil {
+		log.Printf("%v", err)
 		SendErrorResponse(w, defs.ErrorRequestBodyParseFailed)
 		return
 	}
 
-	if err := dbops.AddUserCredential(ubody.Username, ubody.Pwd); err != nil {
+	hashedPwd, _ := bcrypt.GenerateFromPassword([]byte(ubody.Pwd), 8)
+	if err := dbops.AddUserCredential(ubody.Username, string(hashedPwd)); err != nil {
+		log.Printf("error@CreateUser/AddUserCredential: %v", err)
 		SendErrorResponse(w, defs.ErrorDBError)
 		return
 	}
@@ -31,6 +36,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	su := &defs.SignedUp{Success: true, SessionId: id}
 
 	if resp, err := json.Marshal(su); err != nil {
+		log.Printf("error@CreateUser/GenerateNewSessionId: %v", err)
 		SendErrorResponse(w, defs.ErrorInternalFaults)
 		return
 	} else {
@@ -40,43 +46,39 @@ func CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 func Login(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	res, _ := ioutil.ReadAll(r.Body)
-	log.Printf("%s", res)
+	log.Printf("Login request body: %s", res)
+	log.Printf("Request object: %s", r.Context())
 	ubody := &defs.UserCredential{}
 	if err := json.Unmarshal(res, ubody); err != nil {
-		log.Printf("%s", err)
+		log.Printf("Login unmarshal error: %s", err)
 		SendErrorResponse(w, defs.ErrorRequestBodyParseFailed)
 		return
-	}
-
-	// Validate the request body
-	uname := p.ByName("username")
-	log.Printf("Login url name: %s", uname)
-	log.Printf("Login body name: %s", ubody)
-	if uname != ubody.Username {
-		SendErrorResponse(w, defs.ErrorNotAuthUser)
-		return
-	}
-
-	log.Printf("%s", ubody.Username)
-	pwd, err := dbops.GetUserCredential(ubody.Username)
-	log.Printf("Login pwd: %s", pwd)
-	log.Printf("Login body pwd: %s", ubody.Pwd)
-	if err != nil || len(pwd) == 0 || pwd != ubody.Pwd {
-		SendErrorResponse(w, defs.ErrorNotAuthUser)
-		return
-	}
-
-	id := session.GenerateNewSessionId(ubody.Username)
-	si := &defs.SignedIn{true, id}
-	if resp, err := json.Marshal(si); err != nil {
-		SendErrorResponse(w, defs.ErrorInternalFaults)
 	} else {
-		SendNormalResponse(w, string(resp), 200)
+		log.Printf("Login ubody: %s", ubody)
 	}
+
+	dbops.GetUserCredential(ubody.Username)
+
+	// log.Printf("%s", ubody.Username)
+	// pwd, err := dbops.GetUserCredential(ubody.Username)
+	// log.Printf("Login pwd: %s", pwd)
+	// log.Printf("Login body pwd: %s", ubody.Pwd)
+	// if err != nil || len(pwd) == 0 || pwd != ubody.Pwd {
+	// 	SendErrorResponse(w, defs.ErrorNotAuthUser)
+	// 	return
+	// }
+	//
+	// id := session.GenerateNewSessionId(ubody.Username)
+	// si := &defs.SignedIn{Success: true, SessionId: id}
+	// if resp, err := json.Marshal(si); err != nil {
+	// 	SendErrorResponse(w, defs.ErrorInternalFaults)
+	// } else {
+	// 	SendNormalResponse(w, string(resp), 200)
+	// }
 }
 
 func GetUserInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if !ValidateUser(w, r) {
+	if !validateUser(w, r) {
 		log.Printf("Unauthorized user\n")
 		return
 	}
@@ -89,7 +91,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		return
 	}
 
-	ui := &defs.UserInfo{u.Id}
+	ui := &defs.UserInfo{Id: u.Id}
 	if resp, err := json.Marshal(ui); err != nil {
 		SendErrorResponse(w, defs.ErrorInternalFaults)
 	} else {
@@ -98,7 +100,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 }
 
 func AddNewVideo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if !ValidateUser(w, r) {
+	if !validateUser(w, r) {
 		log.Printf("Unauthorized user\n")
 		return
 	}
@@ -127,7 +129,7 @@ func AddNewVideo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 }
 
 func ListAllVideos(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if !ValidateUser(w, r) {
+	if !validateUser(w, r) {
 		return
 	}
 
@@ -148,25 +150,25 @@ func ListAllVideos(w http.ResponseWriter, r *http.Request, p httprouter.Params) 
 
 }
 
-func DeleteVideo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if !ValidateUser(w, r) {
-		return
-	}
-
-	vid := p.ByName("vid-id")
-	err := dbops.DeleteVideoInfo(vid)
-	if err != nil {
-		log.Printf("Error in DeleteVideo: %s", err)
-		SendErrorResponse(w, defs.ErrorDBError)
-		return
-	}
-
-	go utils.SendDeleteVideoRequest(vid)
-	SendNormalResponse(w, "", 204)
-}
+// func DeleteVideo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+// 	if !validateUser(w, r) {
+// 		return
+// 	}
+//
+// 	vid := p.ByName("vid-id")
+// 	err := dbops.DeleteVideoInfo(vid)
+// 	if err != nil {
+// 		log.Printf("Error in DeleteVideo: %s", err)
+// 		SendErrorResponse(w, defs.ErrorDBError)
+// 		return
+// 	}
+//
+// 	go utils.SendDeleteVideoRequest(vid)
+// 	SendNormalResponse(w, "", 204)
+// }
 
 func PostComment(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if !ValidateUser(w, r) {
+	if !validateUser(w, r) {
 		return
 	}
 
@@ -189,7 +191,7 @@ func PostComment(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 }
 
 func ShowComments(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if !ValidateUser(w, r) {
+	if !validateUser(w, r) {
 		return
 	}
 
@@ -201,7 +203,7 @@ func ShowComments(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		return
 	}
 
-	cms := &defs.Comments{cm}
+	cms := &defs.Comments{Comments: cm}
 	if resp, err := json.Marshal(cms); err != nil {
 		SendErrorResponse(w, defs.ErrorInternalFaults)
 	} else {

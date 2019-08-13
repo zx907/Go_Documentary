@@ -1,7 +1,6 @@
 package streamserver
 
 import (
-	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -27,6 +26,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) 
 	http.ServeContent(w, r, "", time.Now(), video)
 
 	defer video.Close()
+
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -61,7 +61,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) 
 
 }
 
-func testPageHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("./video/upload.html")
-	t.Execute(w, nil)
-}
+// func testPageHandler(w http.ResponseWriter, r *http.Request) {
+// 	t, _ := template.ParseFiles("./video/upload.html")
+// 	t.Execute(w, nil)
+// }

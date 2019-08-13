@@ -9,7 +9,7 @@ import (
 var HEADER_FIELD_SESSION = "X-Session-Id"
 var HEADER_FIELD_UNAME = "X-User-Name"
 
-func ValidateUserSession(r *http.Request) bool {
+func validateUserSession(r *http.Request) bool {
 	sid := r.Header.Get(HEADER_FIELD_SESSION)
 	if len(sid) == 0 {
 		return false
@@ -24,7 +24,7 @@ func ValidateUserSession(r *http.Request) bool {
 	return true
 }
 
-func ValidateUser(w http.ResponseWriter, r *http.Request) bool {
+func validateUser(w http.ResponseWriter, r *http.Request) bool {
 	uname := r.Header.Get(HEADER_FIELD_UNAME)
 	if len(uname) == 0 {
 		SendErrorResponse(w, defs.ErrorNotAuthUser)
